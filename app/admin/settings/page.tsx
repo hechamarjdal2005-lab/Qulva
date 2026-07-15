@@ -24,6 +24,11 @@ const TEXT_FIELDS = [
   { key: "social_links", label: "Social Links (JSON)", type: "json" as const },
 ];
 
+const TOGGLE_FIELDS = [
+  { key: "show_waitlist_section", label: "Show Waitlist Section", description: "Homepage — the email signup block at the bottom" },
+  { key: "show_biometric_simulator", label: "Show Biometric Simulator", description: "About page — the interactive HRV/Sleep sliders section" },
+];
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -156,6 +161,37 @@ export default function SettingsPage() {
               </div>
             );
           })}
+
+          {/* Section Visibility Toggles */}
+          <div className="bg-white border border-[#E5E5E5] p-6 md:p-8">
+            <p className="text-label-sm uppercase text-[#757575] mb-6">Section Visibility</p>
+            <div className="space-y-6">
+              {TOGGLE_FIELDS.map((field) => {
+                const isOn = settings[field.key] !== "false";
+                return (
+                  <div key={field.key} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-black font-medium">{field.label}</p>
+                      <p className="text-xs text-[#757575] mt-0.5">{field.description}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updateSetting(field.key, isOn ? "false" : "true")}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer transition-colors duration-200 ease-in-out rounded-full border-2 border-transparent ${
+                        isOn ? "bg-black" : "bg-[#D4D4D4]"
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out ${
+                          isOn ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Text / JSON fields */}
           <div className="bg-white border border-[#E5E5E5] p-6 md:p-8 space-y-8">

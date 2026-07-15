@@ -114,7 +114,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
               </div>
 
               <div className="space-y-4">
-                {article.sources.map((source, index) => (
+                {article.sources.map((source: { title: string; url: string }, index: number) => (
                   <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
                     <div className="md:col-span-1 text-headline-md text-black font-mono font-bold">
                       0{index + 1}/
