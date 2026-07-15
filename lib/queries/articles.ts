@@ -1,3 +1,8 @@
+export interface DbArticleSource {
+  title: string;
+  url: string;
+}
+
 export interface DbArticle {
   id: number;
   number_str: string;
@@ -9,6 +14,7 @@ export interface DbArticle {
   image_url: string | null;
   read_time: string;
   date: string;
+  sources: DbArticleSource[];
   created_at: string;
   updated_at: string;
 }

@@ -13,6 +13,11 @@ interface ProtocolStep {
   sort_order: number;
 }
 
+interface ArticleSource {
+  title: string;
+  url: string;
+}
+
 interface Article {
   id: number;
   number_str: string;
@@ -24,6 +29,7 @@ interface Article {
   image_url: string | null;
   read_time: string;
   date: string;
+  sources: ArticleSource[];
 }
 
 export default function ArticleEditPage() {
@@ -43,8 +49,10 @@ export default function ArticleEditPage() {
     image_url: null,
     read_time: "5 min read",
     date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "2-digit" }),
+    sources: [],
   });
   const [steps, setSteps] = useState<ProtocolStep[]>([]);
+  const [sources, setSources] = useState<ArticleSource[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +68,7 @@ export default function ArticleEditPage() {
       .eq("id", id)
       .single();
     if (data) setArticle(data as Article);
+    if (data?.sources) setSources(data.sources as ArticleSource[]);
 
     const { data: stepsData } = await supabase
       .from("protocol_steps")
@@ -82,6 +91,7 @@ export default function ArticleEditPage() {
       image_url: article.image_url,
       read_time: article.read_time,
       date: article.date,
+      sources: sources,
       updated_at: new Date().toISOString(),
     };
 
@@ -129,6 +139,20 @@ export default function ArticleEditPage() {
 
   function updateStep(index: number, field: keyof ProtocolStep, value: string) {
     setSteps((prev) =>
+      prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
+    );
+  }
+
+  function addSource() {
+    setSources((prev) => [...prev, { title: "", url: "" }]);
+  }
+
+  function removeSource(index: number) {
+    setSources((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateSource(index: number, field: keyof ArticleSource, value: string) {
+    setSources((prev) =>
       prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
     );
   }
@@ -333,6 +357,54 @@ export default function ArticleEditPage() {
                   placeholder="Step description"
                   rows={3}
                   className="w-full border border-[#E5E5E5] p-3 text-sm focus:outline-none focus:border-black resize-none"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-headline-md text-black font-bold">Sources</h2>
+          <button
+            onClick={addSource}
+            className="bg-white border border-[#E5E5E5] text-black px-4 py-2 text-label-sm uppercase tracking-widest hover:border-black transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Add Source
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {sources.map((source, index) => (
+            <div
+              key={index}
+              className="bg-white border border-[#E5E5E5] p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-headline-md text-black font-mono font-bold">
+                  0{index + 1}/
+                </span>
+                <button
+                  onClick={() => removeSource(index)}
+                  className="text-red-500 hover:text-red-700 cursor-pointer"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  value={source.title}
+                  onChange={(e) => updateSource(index, "title", e.target.value)}
+                  placeholder="Source title (e.g. Journal of Dermatology, 2023)"
+                  className="w-full border border-[#E5E5E5] p-3 text-sm focus:outline-none focus:border-black"
+                />
+                <input
+                  value={source.url}
+                  onChange={(e) => updateSource(index, "url", e.target.value)}
+                  placeholder="https://..."
+                  className="w-full border border-[#E5E5E5] p-3 text-sm focus:outline-none focus:border-black"
                 />
               </div>
             </div>

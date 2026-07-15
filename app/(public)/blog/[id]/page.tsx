@@ -101,6 +101,39 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
               </div>
             </div>
           )}
+
+          {article.sources && article.sources.length > 0 && (
+            <div className="space-y-6 bg-[#F5F5F5] p-8 md:p-12 border border-[#E5E5E5]">
+              <div className="border-b-2 border-black pb-4">
+                <span className="text-label-sm uppercase tracking-[0.2em] text-[#757575] block mb-2">
+                  References
+                </span>
+                <h3 className="text-headline-md text-black font-bold uppercase">
+                  Sources
+                </h3>
+              </div>
+
+              <div className="space-y-4">
+                {article.sources.map((source, index) => (
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                    <div className="md:col-span-1 text-headline-md text-black font-mono font-bold">
+                      0{index + 1}/
+                    </div>
+                    <div className="md:col-span-11">
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-body-md text-[#5D5F5F] underline underline-offset-4 decoration-[#E5E5E5] hover:decoration-black hover:text-black transition-all"
+                      >
+                        {source.title}
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
