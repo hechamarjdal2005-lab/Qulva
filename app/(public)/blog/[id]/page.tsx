@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
 import { ChevronLeft, Clock, Calendar } from "lucide-react";
+import type { DbArticle, DbProtocolStep } from "@/lib/queries/articles";
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -11,7 +12,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
     .from("journal_articles")
     .select("*")
     .eq("id", Number(id))
-    .single();
+    .single<DbArticle>();
 
   if (!article) {
     notFound();
@@ -21,7 +22,8 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
     .from("protocol_steps")
     .select("*")
     .eq("article_id", article.id)
-    .order("sort_order");
+    .order("sort_order")
+    .returns<DbProtocolStep[]>();
 
   return (
     <div className="animate-fade-in pt-32 pb-24 px-6 md:px-16 min-h-screen bg-white">
@@ -114,7 +116,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ id:
               </div>
 
               <div className="space-y-4">
-                {article.sources.map((source: { title: string; url: string }, index: number) => (
+                {article.sources.map((source, index) => (
                   <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
                     <div className="md:col-span-1 text-headline-md text-black font-mono font-bold">
                       0{index + 1}/
